@@ -2,8 +2,7 @@ package com.product.api.service;
 
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-
+import com.product.api.dto.ApiResponse;
 import com.product.api.entity.Category;
 
 public interface SvcCategory {
@@ -12,11 +11,11 @@ public interface SvcCategory {
     
     Category findByCategoryId(Integer categoryId);
 
-    String createCategory(Category category);
+    ApiResponse createCategory(Category category);
 
-    String updateCategory(Category category);
+    ApiResponse updateCategory(Category category);
 
-    String deleteByCategoryId(Integer categoryId);
+    ApiResponse deleteByCategoryId(Integer categoryId);
 
 
 
