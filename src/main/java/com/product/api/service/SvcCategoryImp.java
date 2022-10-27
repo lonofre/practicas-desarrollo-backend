@@ -33,7 +33,7 @@ public class SvcCategoryImp implements SvcCategory {
 
     @Override
     public ApiResponse createCategory(Category category) {
-        Category categorySaved = (Category) repo.findByCategoryId(category.getCategoryId());
+        Category categorySaved = (Category) repo.findByCategory(category.getCategory());
         if(categorySaved != null){
             if(categorySaved.getStatus() == 0){
                 categorySaved.setCategoryId(1);
@@ -72,7 +72,7 @@ public class SvcCategoryImp implements SvcCategory {
         if(categorySaved == null){
             throw new ApiException(HttpStatus.NOT_FOUND, "category does not exists");
         }
-        repo.deleteByCategoryId(categoryId);
+        repo.deactivateCategory(categoryId);
         return new ApiResponse("category removed");
     }
     

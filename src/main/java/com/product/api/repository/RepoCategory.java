@@ -14,14 +14,20 @@ import com.product.api.entity.Category;
 @Repository
 public interface RepoCategory extends JpaRepository<Category, Integer>  {
     
+    @Query(value = "SELECT * FROM category WHERE status = 1", nativeQuery = true)
     List<Category> findAll();
     
-    Category findByCategoryId(Integer categoryId);
+    @Query(value = "SELECT * FROM category WHERE category_id = :category_id", nativeQuery = true)
+    Category findByCategoryId(@Param("category_id") Integer categoryId);
 
     @Transactional
     Integer deleteByCategoryId(Integer categoryId);
 
-    @Query(value = "SELECT * FROM category where category = :category", nativeQuery = true)
+    @Transactional
+    @Query(value = "UPDATE category SEET status = 0 WHERE category_id = :category_id", nativeQuery = true)
+    Integer deactivateCategory(@Param("category_id") Integer categoryId);
+
+    @Query(value = "SELECT * FROM category WHERE category = :category", nativeQuery = true)
     Category findByCategory(@Param("category") String category);
 
 }
