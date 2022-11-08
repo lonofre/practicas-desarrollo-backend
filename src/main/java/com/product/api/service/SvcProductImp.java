@@ -1,6 +1,7 @@
 package com.product.api.service;
 
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.product.api.dto.ApiResponse;
 import com.product.api.entity.Category;
 import com.product.api.entity.Product;
+import com.product.api.entity.ProductBasicData;
 import com.product.api.repository.RepoCategory;
 import com.product.api.repository.RepoProduct;
 import com.product.exception.ApiException;
@@ -25,7 +27,7 @@ public class SvcProductImp implements SvcProduct {
 
 	@Override
 	public Product getProduct(String gtin) {
-		Product product = repo.findByGtinAndStatus1(gtin); // sustituir null por la llamada al método implementado en el											// repositorio
+		Product product = repo.findByGtinAndStatus1(gtin);
 		if (product != null) {
 			product.setCategory(repoCategory.findByCategoryId(product.getCategory_id()));
 			return product;
@@ -33,16 +35,7 @@ public class SvcProductImp implements SvcProduct {
 			throw new ApiException(HttpStatus.NOT_FOUND, "product does not exist");
 	}
 
-	/*
-	 * 4. Implementar el método createProduct considerando las siguientes
-	 * validaciones:
-	 * 1. validar que la categoría del nuevo producto exista
-	 * 2. el código GTIN y el nombre del producto son únicos
-	 * 3. si al intentar realizar un nuevo registro ya existe un producto con el
-	 * mismo GTIN pero tiene estatus 0,
-	 * entonces se debe cambiar el estatus del producto existente a 1 y actualizar
-	 * sus datos con los del nuevo registro
-	 */
+
 	@Override
 	public ApiResponse createProduct(Product in) {
 
@@ -106,5 +99,25 @@ public class SvcProductImp implements SvcProduct {
 
 		repo.updateProductStock(gtin, product.getStock() - stock);
 		return new ApiResponse("product stock updated");
+	}
+
+
+	@Override
+	public List<ProductBasicData> findAll(Integer categoryId) {
+		return repo.findAllByCategoryId(categoryId);
+	}
+
+
+	@Override
+	public ApiResponse updateProductCategory(String gtin, Integer categoryId) {
+		Category category = repoCategory.findByCategoryId(categoryId);
+		Product product = repo.findByGtin(gtin);
+		if (category == null){
+			throw new ApiException(HttpStatus.BAD_REQUEST, "category not found");
+		} else if (product == null) {
+			throw new ApiException(HttpStatus.NOT_FOUND, "product does not exist");
+		}
+		repo.updateProductCategory(categoryId, gtin);
+		return new ApiResponse("product category updated");
 	}
 }
